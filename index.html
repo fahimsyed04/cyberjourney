@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cybersecurity Journey</title>
+<style>
+:root{
+  --bg:#0b1020; --card:#121a2d; --card2:#172139; --text:#eef4ff; --muted:#91a0ba;
+  --accent:#6ee7b7; --accent2:#60a5fa; --danger:#fb7185; --border:#263451;
+}
+*{box-sizing:border-box}
+body{margin:0;background:radial-gradient(circle at top,#16213b 0,#0b1020 45%);color:var(--text);font-family:Inter,system-ui,-apple-system,Segoe UI,sans-serif}
+.container{max-width:1050px;margin:auto;padding:28px 18px 60px}
+header{display:flex;justify-content:space-between;align-items:center;gap:20px;margin-bottom:28px}
+.brand{font-size:24px;font-weight:800}.brand span{color:var(--accent)}
+.sub{color:var(--muted);font-size:14px;margin-top:5px}
+.reset{background:transparent;border:1px solid var(--border);color:var(--muted);padding:9px 13px;border-radius:10px;cursor:pointer}
+.hero{background:linear-gradient(135deg,#14213b,#11192b);border:1px solid var(--border);border-radius:22px;padding:26px;margin-bottom:22px;box-shadow:0 18px 60px #0004}
+.hero h1{margin:0 0 8px;font-size:32px}.hero p{margin:0;color:var(--muted)}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:22px}
+.stat{background:#0c1426aa;border:1px solid var(--border);border-radius:14px;padding:15px}
+.stat b{font-size:22px;display:block}.stat small{color:var(--muted)}
+.progress-wrap{margin-top:20px}.bar{height:12px;background:#0a1120;border-radius:99px;overflow:hidden;border:1px solid var(--border)}
+.fill{height:100%;background:linear-gradient(90deg,var(--accent2),var(--accent));transition:.35s;width:0}
+.phase{background:var(--card);border:1px solid var(--border);border-radius:18px;margin:16px 0;overflow:hidden}
+.phase-head{padding:19px 20px;display:flex;align-items:center;justify-content:space-between;gap:14px}
+.phase-title{font-size:18px;font-weight:750}.phase-meta{color:var(--muted);font-size:13px;margin-top:4px}
+.badge{padding:7px 10px;border-radius:999px;font-size:12px;font-weight:700;white-space:nowrap}
+.locked{background:#202a3e;color:#71809a}.active{background:#1d3556;color:#7fc1ff}.progress{background:#123b38;color:#6ee7b7}.complete{background:#123b28;color:#6ee7b7}
+.tasks{border-top:1px solid var(--border);padding:8px 12px 12px}
+.task{display:flex;align-items:center;gap:13px;padding:13px 10px;border-radius:12px;margin:3px 0}
+.task:hover{background:var(--card2)}
+.check{width:23px;height:23px;border-radius:7px;border:1px solid #465572;background:#0c1425;display:grid;place-items:center;cursor:pointer;flex:none;color:#06130e;font-weight:900}
+.task.done .check{background:var(--accent);border-color:var(--accent)}
+.task.done .name{text-decoration:line-through;color:#75849e}
+.name{font-weight:600}.task-info{flex:1}.desc{font-size:12px;color:var(--muted);margin-top:3px}
+.action{border:1px solid var(--border);background:#10192b;color:var(--text);border-radius:9px;padding:7px 10px;cursor:pointer;font-size:12px}
+.action:hover{border-color:#52709e}
+.next{outline:1px solid #315c7c;background:#10223a}
+@media(max-width:650px){header{align-items:flex-start}.stats{grid-template-columns:1fr}.hero h1{font-size:27px}.phase-head{align-items:flex-start}.task{align-items:flex-start}.action{display:none}}
+</style>
+</head>
+<body>
+<div class="container">
+<header>
+  <div><div class="brand">🔐 Cyber<span>Journey</span></div><div class="sub">Your personal cybersecurity roadmap</div></div>
+  <button class="reset" onclick="resetAll()">Reset progress</button>
+</header>
+
+<section class="hero">
+  <h1>Build the skill. Build the career.</h1>
+  <p>One task at a time. Your progress is saved automatically on this device.</p>
+  <div class="stats">
+    <div class="stat"><b id="totalDone">0/0</b><small>Tasks completed</small></div>
+    <div class="stat"><b id="percent">0%</b><small>Overall progress</small></div>
+    <div class="stat"><b id="phaseCount">0/5</b><small>Phases completed</small></div>
+  </div>
+  <div class="progress-wrap"><div class="bar"><div class="fill" id="overallFill"></div></div></div>
+</section>
+
+<div id="roadmap"></div>
+</div>
+
+<script>
+const phases = [
+ {title:"Phase 1 — Foundation", icon:"🧱", tasks:[
+  ["Networking basics","IP, DNS, HTTP/HTTPS, TCP/UDP and ports."],
+  ["Windows security basics","Users, permissions, processes, services and Event Viewer."],
+  ["Linux basics","Terminal, files, permissions, processes and essential commands."],
+  ["Git & GitHub","Repositories, branches, commits and documenting projects."],
+  ["Python basics","Variables, loops, functions, files and simple automation."],
+  ["SQL basics","Queries, filtering, joins and understanding databases."],
+  ["Cybersecurity fundamentals","CIA triad, threats, vulnerabilities, risk and security controls."]
+ ]},
+ {title:"Phase 2 — Security", icon:"🛡️", tasks:[
+  ["CIA triad","Confidentiality, integrity and availability."],
+  ["Authentication & authorization","Passwords, MFA, sessions, roles and access control."],
+  ["Common attacks","Phishing, brute force, injection, credential attacks and more."],
+  ["Malware & phishing","Types, indicators and safe analysis basics."],
+  ["Vulnerabilities & CVEs","Understand vulnerabilities, severity and remediation."],
+  ["Firewalls","Rules, ports, network filtering and basic troubleshooting."],
+  ["Encryption & hashing","Symmetric/asymmetric encryption, hashes and certificates."],
+  ["Incident response","Identify, contain, eradicate, recover and document."]
+ ]},
+ {title:"Phase 3 — SOC", icon:"🖥️", tasks:[
+  ["Learn logs","Understand what useful security logs contain."],
+  ["Windows Event Viewer","Find and interpret authentication and system events."],
+  ["SIEM fundamentals","Understand collection, correlation, alerts and dashboards."],
+  ["Alert investigation","Triage alerts and separate signal from noise."],
+  ["Incident investigation","Build a timeline from evidence."],
+  ["Threat intelligence","IOCs, context, enrichment and basic research."],
+  ["MITRE ATT&CK basics","Map attacker behavior to tactics and techniques."]
+ ]},
+ {title:"Phase 4 — Portfolio", icon:"🚀", tasks:[
+  ["Build a home cybersecurity lab","Create a safe environment for hands-on practice."],
+  ["Security project #1","Complete and document one practical investigation/project."],
+  ["Security project #2","Build a second project showing a different skill."],
+  ["Security project #3","Build an optional advanced project."],
+  ["GitHub documentation","Write clear READMEs, screenshots and lessons learned."],
+  ["Cybersecurity resume","Create a focused junior-security resume."],
+  ["LinkedIn profile","Present your skills, projects and learning journey."]
+ ]},
+ {title:"Phase 5 — Job", icon:"🎯", tasks:[
+  ["Apply consistently","Start applying to internships and junior roles."],
+  ["Interview practice","Practice networking, security and troubleshooting questions."],
+  ["Project explanations","Be able to explain what you built and why."],
+  ["Mock interviews","Practice communicating clearly under pressure."],
+  ["Track applications","Record applications, responses and follow-ups."],
+  ["Keep learning","Continue improving while applying and interviewing."]
+ ]}
+];
+
+const KEY="cyberJourneyState";
+let state=JSON.parse(localStorage.getItem(KEY)||"{}");
+
+function isDone(p,t){return !!state[`${p}-${t}`]}
+function phaseDone(p){return phases[p].tasks.every((_,t)=>isDone(p,t))}
+function phaseUnlocked(p){return p===0 || phaseDone(p-1)}
+function toggle(p,t){
+ if(!phaseUnlocked(p)) return;
+ const k=`${p}-${t}`;
+ state[k]=!state[k];
+ localStorage.setItem(KEY,JSON.stringify(state));
+ render();
+}
+function render(){
+ const root=document.getElementById("roadmap");
+ let total=0,done=0,completedPhases=0;
+ phases.forEach((ph,p)=>{total+=ph.tasks.length; ph.tasks.forEach((_,t)=>{if(isDone(p,t))done++});if(phaseDone(p))completedPhases++});
+ const pct=Math.round(done/total*100);
+ document.getElementById("totalDone").textContent=`${done}/${total}`;
+ document.getElementById("percent").textContent=pct+"%";
+ document.getElementById("phaseCount").textContent=`${completedPhases}/${phases.length}`;
+ document.getElementById("overallFill").style.width=pct+"%";
+ root.innerHTML="";
+ phases.forEach((ph,p)=>{
+   const unlocked=phaseUnlocked(p), pd=phaseDone(p);
+   const d=ph.tasks.filter((_,t)=>isDone(p,t)).length;
+   let badge=pd?`<span class="badge complete">✓ COMPLETED</span>`:!unlocked?`<span class="badge locked">🔒 LOCKED</span>`:d?`<span class="badge progress">● IN PROGRESS</span>`:`<span class="badge active">○ READY</span>`;
+   const section=document.createElement("section"); section.className="phase";
+   section.innerHTML=`<div class="phase-head"><div><div class="phase-title">${ph.icon} ${ph.title}</div><div class="phase-meta">${d}/${ph.tasks.length} tasks completed</div></div>${badge}</div><div class="tasks"></div>`;
+   const tasks=section.querySelector(".tasks");
+   ph.tasks.forEach((task,t)=>{
+     const doneNow=isDone(p,t);
+     const can=unlocked;
+     const row=document.createElement("div"); row.className="task"+(doneNow?" done":"")+(can&&!doneNow&&d===t?" next":"");
+     row.innerHTML=`<div class="check">${doneNow?"✓":""}</div><div class="task-info"><div class="name">${task[0]}</div><div class="desc">${task[1]}</div></div><button class="action">${doneNow?"Undo":"Complete"}</button>`;
+     row.querySelector(".check").onclick=()=>toggle(p,t);
+     row.querySelector(".action").onclick=()=>toggle(p,t);
+     if(!can){row.style.opacity=".5";row.querySelector(".action").disabled=true}
+     tasks.appendChild(row);
+   });
+   root.appendChild(section);
+ });
+}
+function resetAll(){
+ if(confirm("Reset your entire cybersecurity progress?")){
+  state={};localStorage.removeItem(KEY);render();
+ }
+}
+render();
+</script>
+
+<style>
+.toast{position:fixed;top:18px;right:18px;z-index:100;background:#14223a;border:1px solid #3d5b82;border-radius:16px;padding:14px 17px;max-width:340px;box-shadow:0 20px 60px #0009;transform:translateX(130%);opacity:0;transition:.45s cubic-bezier(.2,.8,.2,1)}
+.toast.show{transform:translateX(0);opacity:1}.toast b{display:block;margin-bottom:4px}.toast span{color:#aab8cc;font-size:13px}
+.testbox{border-top:1px solid var(--border);padding:15px;background:#0d1628}.testinner{background:#101d32;border:1px solid var(--border);border-radius:14px;padding:16px}.testinner h3{margin:0 0 6px}.testnote{color:var(--muted);font-size:13px}.quiz{position:fixed;inset:0;z-index:90;background:#040814eF;display:none;align-items:center;justify-content:center;padding:14px}.quiz.open{display:flex}.quizbox{width:min(720px,100%);max-height:92vh;overflow:auto;background:#111b30;border:1px solid #3a4b68;border-radius:20px;padding:20px;box-shadow:0 30px 100px #000b}.qtop{display:flex;justify-content:space-between;color:var(--muted);font-size:13px}.qtext{font-size:20px;font-weight:750;margin:22px 0 16px}.opt{display:block;width:100%;text-align:left;background:#0b1425;color:var(--text);border:1px solid var(--border);border-radius:11px;padding:13px;margin:8px 0;cursor:pointer}.opt.sel{background:#122d4b;border-color:var(--blue)}.qactions{display:flex;justify-content:space-between;gap:10px;margin-top:18px}.result{text-align:center;padding:18px}.score{font-size:52px;font-weight:900}.pass{color:var(--green)}.fail{color:var(--red)}
+</style>
+<div class="toast" id="cjToast"><b id="cjToastTitle"></b><span id="cjToastText"></span></div>
+<div class="quiz" id="cjQuiz"><div class="quizbox" id="cjQuizBox"></div></div>
+<script>
+const QUIZ=[
+[
+['Which system translates a domain name into an IP address?',['DNS','FTP','SSH','SMTP'],0],['Which protocol is connection-oriented?',['TCP','UDP','ICMP','DNS'],0],['Which port is normally used by HTTPS?',['21','53','443','25'],2],['Which protocol is connectionless?',['TCP','UDP','SSH','HTTPS'],1],['What does IP stand for?',['Internet Protocol','Internal Process','Internet Permission','Identity Protocol'],0],['What does HTTP primarily support?',['Web communication','Disk encryption','CPU scheduling','Password hashing'],0],['Which Windows tool displays system and security events?',['Event Viewer','Paint','Notepad','Calculator'],0],['Which Linux command lists files?',['ls','cd','pwd','mkdir'],0],['Which Linux command changes directory?',['cd','grep','chmod','cat'],0],['Which is a Linux file-permission class?',['Owner','Browser','Router','Monitor'],0],['What is Git primarily used for?',['Version control','Packet routing','Encryption','DNS'],0],['Which command initializes a Git repository?',['git init','git start','git make','git repo'],0],['Which language is commonly used for security automation?',['Python','CSS','HTML','XML'],0],['Which SQL clause filters rows?',['WHERE','TABLE','FILTER','GROUP'],0],['What does SELECT do in SQL?',['Retrieves data','Deletes a database','Starts Linux','Creates a firewall'],0],['What does CIA stand for in security?',['Confidentiality, Integrity, Availability','Control, Identity, Access','Code, Internet, Authentication','Confidentiality, Inspection, Authorization'],0],['What is a vulnerability?',['A weakness that may be exploited','A backup','A secure password','A network cable'],0],['What is authentication?',['Verifying identity','Granting permissions','Encrypting files','Deleting accounts'],0],['What is authorization?',['Determining allowed access/actions','Proving identity','Changing an IP','Hashing a password'],0],['Which is a good security practice?',['Use MFA where appropriate','Reuse one password everywhere','Share credentials','Disable updates'],0]
+],
+[
+['Which CIA property prevents unauthorized disclosure?',['Confidentiality','Integrity','Availability','Routing'],0],['Which CIA property protects data from unauthorized modification?',['Integrity','Availability','Confidentiality','Routing'],0],['What does MFA add?',['Additional authentication factors','A second firewall','More bandwidth','A new IP'],0],['What is phishing?',['A deceptive attempt to steal information','Disk partitioning','Packet compression','Secure hashing'],0],['What is a brute-force attack?',['Trying many credential combinations','Encrypting traffic','Blocking ports','Backing up files'],0],['SQL injection targets?',['Applications that process SQL input','Power supplies','DNS cables','Monitors'],0],['What is malware?',['Malicious software','A firewall rule','A password manager','A certificate'],0],['What does CVE commonly identify?',['A publicly catalogued vulnerability','A user account','A protocol','A Git commit'],0],['What does a firewall primarily control?',['Network traffic according to rules','CPU temperature','Source formatting','Disk size'],0],['What is hashing generally?',['A one-way transformation','Reversible encryption','A routing protocol','A firewall'],0],['Encryption is mainly used to?',['Protect confidentiality by transforming data','Increase CPU speed','Create DNS records','Remove logs'],0],['Which is asymmetric cryptography?',['RSA','AES','SHA-256','MD5'],0],['Which is symmetric encryption?',['AES','RSA','SHA-256','ECC key pair'],0],['A digital certificate commonly binds?',['An identity to a public key','A password to a port','A log to a firewall','A CPU to RAM'],0],['What is least privilege?',['Only required access is granted','Everyone gets admin','Authentication is disabled','Passwords are shared'],0],['What is credential stuffing?',['Using leaked credentials against other services','Creating a certificate','Scanning ports only','Encrypting passwords'],0],['Why are security updates important?',['They can fix known vulnerabilities','They always increase RAM','They remove MFA','They prevent every attack'],0],['What is incident containment?',['Limiting spread or impact','Deleting all evidence','Publishing credentials','Changing a logo'],0],['Why preserve evidence during an incident?',['For investigation and accountability','To make Wi-Fi faster','To reset passwords automatically','To improve graphics'],0],['What is incident eradication?',['Removing the threat/cause from affected systems','Writing a press release','Changing a monitor','Creating a Git branch'],0]
+],
+[
+['What is a log?',['A recorded event or activity','A firewall','A password','A certificate'],0],['What does a SIEM commonly do?',['Collect and correlate security data','Compile Python only','Replace every firewall','Create websites'],0],['What is an alert?',['A signal that may require investigation','A guaranteed breach','A password reset','A Git commit'],0],['What is alert triage?',['Prioritizing and evaluating alerts','Deleting every alert','Writing malware','Changing DNS'],0],['What is an IOC?',['Indicator of compromise','Internet operating certificate','Internal object cache','Identity of cloud'],0],['Which can be an IOC?',['A malicious IP address','Keyboard layout','Monitor size','CPU brand'],0],['What does MITRE ATT&CK describe?',['Adversary tactics and techniques','Database schemas','Wi-Fi standards','Programming syntax'],0],['What is an incident timeline?',['An ordered sequence of relevant events','A holiday calendar','A firewall list','A Git branch'],0],['Why correlate logs?',['To connect related events and find patterns','To compress files','To create passwords','To replace backups'],0],['Which Windows tool displays event logs?',['Event Viewer','Paint','WordPad','Calculator'],0],['What is a false positive?',['A benign event incorrectly flagged as malicious','A confirmed attack','A missing log','An encrypted file'],0],['What is a false negative?',['A real malicious event that was not detected','A benign alert','A firewall block','A successful login'],0],['What is threat intelligence?',['Information that helps understand threats','A password list','A backup system','A programming language'],0],['What is enrichment?',['Adding useful context to an alert/indicator','Deleting the alert','Changing its color','Encrypting the SIEM'],0],['Why normalize logs?',['To make data consistent for analysis','To delete evidence','To increase monitor resolution','To change passwords'],0],['Why are authentication-failure logs useful?',['They can reveal credential attacks','They damage monitors','They fix Git errors','They prevent disk fragmentation'],0],['What should an analyst do with a suspicious alert?',['Validate evidence and investigate context','Delete logs','Ignore it','Publish the IP publicly'],0],['What is a playbook?',['A documented response procedure','A password list','A network cable','A database'],0],['Why is time synchronization useful?',['It makes event timelines more reliable','It encrypts traffic','It blocks phishing','It creates accounts'],0],['What is log retention?',['How long logs are kept','How fast logs are written','How many passwords exist','How many ports are open'],0]
+],
+[
+['What makes a portfolio project useful?',['It demonstrates a real skill with evidence','It has the most animations','It is copied without explanation','It has no documentation'],0],['What should a README explain?',['Purpose, setup, usage and results','Only your name','Your passwords','Nothing'],0],['Why document a security investigation?',['To show reasoning, evidence and conclusions','To hide mistakes','To avoid learning','To delete logs'],0],['What should never be committed to a public GitHub repo?',['Real passwords or API secrets','README files','Source code','Safe screenshots'],0],['What is a safe cybersecurity lab?',['An isolated environment for authorized practice','A public server you do not own','A random website','A bank production system'],0],['What should a junior resume emphasize?',['Relevant skills, projects and evidence','Unrelated hobbies only','Unverified claims','Passwords'],0],['Why use screenshots in a project?',['They provide visual evidence of work','They replace all explanations','They expose secrets','They increase bandwidth'],0],['What is reproducibility?',['Others can understand and repeat your setup/process','Deleting the project','Changing your username','Hiding commands'],0],['Before testing a target, what should you confirm?',['Authorization','The target password','Its private key','Its admin account'],0],['What is responsible disclosure?',['Reporting vulnerabilities through an appropriate process','Publishing secrets immediately','Selling credentials','Deleting evidence'],0],['Why use Git branches?',['To develop changes separately','To encrypt passwords','To scan ports','To create DNS'],0],['What is a Git commit?',['A recorded set of changes','A firewall alert','A DNS query','A password'],0],['What should project conclusions include?',['Findings, limitations and next steps','Private credentials','Unrelated jokes','No evidence'],0],['Why remove secrets from screenshots?',['To prevent accidental exposure','To improve colors','To make text larger','To increase bandwidth'],0],['What is version control useful for?',['Tracking changes over time','Blocking phishing','Encrypting disks','Replacing SIEM'],0],['What should a junior candidate be able to explain?',['How their projects work and what they learned','Only a project title','Someone else’s code','Private credentials'],0],['What is a test plan?',['Defined steps and expected outcomes','A password','A firewall','A username'],0],['Why keep project scope realistic?',['It helps you finish and demonstrate the intended skill','It makes the project impossible','It hides learning','It removes documentation'],0],['What is responsible scope?',['Testing only systems you are authorized to test','Testing everything online','Guessing credentials','Disabling logs'],0],['Why include lessons learned?',['It shows reflection and improvement','It hides results','It replaces evidence','It proves perfection'],0]
+],
+[
+['What should you do before applying to a role?',['Review requirements and tailor your application','Send a blank resume everywhere','Share passwords','Skip the job description'],0],['What does a SOC analyst commonly do?',['Monitor and investigate security events','Design logos','Manage payroll','Edit videos'],0],['Why tailor a resume?',['To highlight relevant experience','To hide skills','To add false claims','To make it longer only'],0],['If you do not know an interview answer, what is best?',['Be honest and explain how you would find it','Invent a fact','Blame the interviewer','Give a password'],0],['What is STAR useful for?',['Structuring behavioral interview answers','Encrypting files','Scanning ports','Writing SQL'],0],['What should you know about your portfolio?',['How each project works and what you learned','Only its title','Someone else’s code','Nothing'],0],['Why track job applications?',['To organize follow-ups and learn from results','To spam employers','To store passwords','To avoid applying'],0],['What is professional networking?',['Building professional relationships','Changing IP addresses','Opening firewall ports','Scanning Wi-Fi'],0],['What is a junior role?',['An entry-level role with room to develop','A guaranteed promotion','A senior executive role','A certificate'],0],['What makes a technical answer strong?',['Correct reasoning and clear explanation','Confident guessing','Jargon only','No evidence'],0],['Why practice troubleshooting?',['It demonstrates structured problem solving','It avoids learning','It replaces security knowledge','It creates malware'],0],['What should you do after an interview?',['Record lessons and follow up appropriately','Publish private details','Delete your resume','Share credentials'],0],['What is continuous learning?',['Regularly updating and deepening skills','Changing careers weekly','Avoiding fundamentals','Only collecting certificates'],0],['Should certifications replace practical projects?',['No, practical evidence is also valuable','Yes, always','Only if you have no skills','Only for networking'],0],['What does an incident scenario question test?',['Reasoning and response process','Typing speed only','Favorite OS','Gaming skill'],0],['Why ask clarifying questions in an interview?',['To understand the problem before answering','To avoid answering','To waste time','To show off'],0],['What is professionalism?',['Reliable, respectful and accurate behavior','Sharing secrets','Ignoring messages','Exaggerating skills'],0],['What can you do after a rejection?',['Use it as feedback and keep improving','Delete all projects','Stop learning forever','Share confidential feedback publicly'],0],['What is a realistic job-search strategy?',['Consistent applications plus skill improvement','One application only','Waiting indefinitely','Applying with false information'],0],['Why learn cloud security basics?',['Modern environments commonly use cloud services','Cloud has no security issues','It replaces networking','It is unrelated to IT'],0]
+]
+];
+const CJKEY='cyberJourneyV3';
+let cj=JSON.parse(localStorage.getItem(CJKEY)||'{"tasks":{},"tests":{}}');
+let quizState=null;
+function saveCJ(){localStorage.setItem(CJKEY,JSON.stringify(cj))}
+function doneCJ(p,t){return !!cj.tasks[p+'-'+t]}
+function allCJ(p){return phases[p].tasks.every((_,t)=>doneCJ(p,t))}
+function passedCJ(p){return cj.tests[p]?.passed===true}
+function unlockedCJ(p){return p===0||passedCJ(p-1)}
+function showToast(a,b){const x=document.getElementById('cjToast');document.getElementById('cjToastTitle').textContent=a;document.getElementById('cjToastText').textContent=b;x.classList.add('show');clearTimeout(window.cjt);window.cjt=setTimeout(()=>x.classList.remove('show'),4200)}
+function toggleCJ(p,t){if(!unlockedCJ(p))return;const k=p+'-'+t;cj.tasks[k]=!cj.tasks[k];saveCJ();if(cj.tasks[k])showToast('✅ Task completed',phases[p].tasks[t][0]);if(allCJ(p)&&!passedCJ(p))showToast('🧪 Test unlocked',`Phase ${p+1} is ready for its 20-question assessment.`);renderCJ()}
+function renderCJ(){
+ const root=document.getElementById('roadmap');let total=0,done=0,passed=0;phases.forEach((ph,p)=>{total+=ph.tasks.length;ph.tasks.forEach((_,t)=>{if(doneCJ(p,t))done++});if(passedCJ(p))passed++});const pct=Math.round(done/total*100);document.getElementById('totalDone').textContent=`${done}/${total}`;document.getElementById('percent').textContent=pct+'%';document.getElementById('phaseCount').textContent=`${passed}/${phases.length}`;document.getElementById('overallFill').style.width=pct+'%';root.innerHTML='';
+ phases.forEach((ph,p)=>{const can=unlockedCJ(p),ad=allCJ(p),ps=passedCJ(p),d=ph.tasks.filter((_,t)=>doneCJ(p,t)).length;let badge=ps?'<span class="badge complete">✓ PASSED</span>':!can?'<span class="badge locked">🔒 LOCKED</span>':ad?'<span class="badge progress">🧪 TEST READY</span>':'<span class="badge active">○ IN PROGRESS</span>';const sec=document.createElement('section');sec.className='phase';sec.innerHTML=`<div class="phase-head"><div><div class="phase-title">${ph.icon} ${ph.title}</div><div class="phase-meta">${d}/${ph.tasks.length} tasks completed${cj.tests[p]?` · Best test: ${cj.tests[p].best}%`:''}</div></div>${badge}</div><div class="tasks"></div>`;const box=sec.querySelector('.tasks');ph.tasks.forEach((task,t)=>{const dd=doneCJ(p,t),r=document.createElement('div');r.className='task'+(dd?' done':'')+(can&&!dd&&d===t?' next':'');r.innerHTML=`<div class="check">${dd?'✓':''}</div><div class="task-info"><div class="name">${task[0]}</div><div class="desc">${task[1]}</div></div><button class="action">${dd?'Undo':'Complete'}</button>`;r.querySelector('.check').onclick=()=>toggleCJ(p,t);r.querySelector('.action').onclick=()=>toggleCJ(p,t);if(!can){r.style.opacity='.48';r.querySelector('.action').disabled=true}box.appendChild(r)});if(can){const tb=document.createElement('div');tb.className='testbox';tb.innerHTML=ps?`<div class="testinner"><h3>🎉 Phase assessment passed</h3><div class="testnote">Best score: ${cj.tests[p].best}% · Next phase unlocked.</div></div>`:ad?`<div class="testinner"><h3>🧪 Phase ${p+1} Test</h3><div class="testnote">20 questions · Need more than 85% to pass. With 20 questions, that means 18/20 (90%) or higher.</div><button class="action" style="margin-top:12px" onclick="startCJ(${p})">${cj.tests[p]?'Retake test':'Start test'}</button></div>`:`<div class="testinner"><h3>🔒 Test locked</h3><div class="testnote">Complete every task in this phase to unlock its 20-question assessment.</div></div>`;sec.appendChild(tb)}root.appendChild(sec)})
+}
+function startCJ(p){let q=QUIZ[p].slice();for(let i=q.length-1;i>0;i--){let j=Math.floor(Math.random()*(i+1));[q[i],q[j]]=[q[j],q[i]]}quizState={p,qs:q,answers:Array(20).fill(null),i:0};document.getElementById('cjQuiz').classList.add('open');drawCJ()}
+function drawCJ(){const q=quizState.qs[quizState.i],chosen=quizState.answers[quizState.i],b=document.getElementById('cjQuizBox');b.innerHTML=`<div class="qtop"><span>${phases[quizState.p].title} Test</span><span>Question ${quizState.i+1}/20</span></div><div class="qtext">${q[0]}</div><div id="opts"></div><div class="qactions"><button class="action" ${quizState.i===0?'disabled':''} onclick="backCJ()">← Back</button><button class="action" onclick="nextCJ()">${quizState.i===19?'Finish test':'Next →'}</button></div>`;const o=b.querySelector('#opts');q[1].forEach((txt,i)=>{const x=document.createElement('button');x.className='opt'+(chosen===i?' sel':'');x.textContent=txt;x.onclick=()=>{quizState.answers[quizState.i]=i;drawCJ()};o.appendChild(x)})}
+function backCJ(){if(quizState.i>0){quizState.i--;drawCJ()}}
+function nextCJ(){if(quizState.answers[quizState.i]===null){showToast('⚠️ Choose an answer','Select an option before continuing.');return}if(quizState.i<19){quizState.i++;drawCJ()}else finishCJ()}
+function finishCJ(){let correct=0;quizState.qs.forEach((q,i)=>{if(quizState.answers[i]===q[2])correct++});const score=correct*5,p=quizState.p,pass=score>85,old=cj.tests[p]?.best||0;cj.tests[p]={score,passed:pass,best:Math.max(old,score),attempts:(cj.tests[p]?.attempts||0)+1};saveCJ();document.getElementById('cjQuizBox').innerHTML=`<div class="result"><div class="qtop"><span>Phase ${p+1} Test</span><span>${correct}/20 correct</span></div><div class="score ${pass?'pass':'fail'}">${score}%</div><h2>${pass?'🎉 PASSED':'🔴 NOT PASSED'}</h2><p class="testnote">${pass?'Excellent! The next phase is unlocked.':'You need more than 85%. Review the phase and retake the test.'}</p><button class="action" onclick="closeCJ()">${pass?'Continue':'Review phase'}</button></div>`;if(pass)showToast('🎉 Congratulations!',`You passed Phase ${p+1}. ${p<4?'Phase '+(p+2)+' is now unlocked!':'You completed the entire roadmap!'}`);else showToast('🔴 Test not passed',`You scored ${score}%. You need more than 85% to continue.`);renderCJ()}
+function closeCJ(){document.getElementById('cjQuiz').classList.remove('open');quizState=null;renderCJ()}
+function resetAll(){if(confirm('Reset all tasks, test scores and unlocked phases?')){cj={tasks:{},tests:{}};saveCJ();renderCJ();showToast('Reset complete','Your CyberJourney is back to Phase 1.')}}
+renderCJ();
+</script>
+</body>
+</html>
